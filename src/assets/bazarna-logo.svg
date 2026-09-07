@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <!-- Background split: Cream (Left 67%) and Teal (Right 33%) -->
+  <rect x="0" y="0" width="336" height="500" fill="#F6F2E7" />
+  <rect x="336" y="0" width="164" height="500" fill="#1CA778" />
+
+  <!-- Left Cobalt Blue Rectangle -->
+  <rect x="0" y="130" width="242" height="240" fill="#1C61C4" />
+
+  <!-- Center Yellow Circle -->
+  <circle cx="208" cy="250" r="208" fill="#FFC107" />
+
+  <!-- Inner Crimson Red Square -->
+  <rect x="44" y="130" width="198" height="240" fill="#E5343A" />
+
+  <!-- Right Black Semicircle Overlay -->
+  <path d="M 336 42 A 208 208 0 0 1 336 458 Z" fill="#141518" />
+</svg>
