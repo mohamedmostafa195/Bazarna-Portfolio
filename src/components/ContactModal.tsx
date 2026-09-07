@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { X, Send, CheckCircle2, Sparkles } from 'lucide-react';
+import { X, Send, CheckCircle2, Sparkles, Loader2, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
+
+const WEB3FORMS_ACCESS_KEY = "d428552a-7049-4cca-bce5-0788637aef58";
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -11,29 +13,66 @@ interface ContactModalProps {
 export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, defaultTopic }) => {
   const [topic, setTopic] = useState(defaultTopic || 'Brand Application');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const [formState, setFormState] = useState({
     name: '',
     brandName: '',
     email: '',
     phone: '',
-    message: '',
-    category: 'Fashion & Apparel'
+    message: ''
   });
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    confetti({
-      particleCount: 70,
-      spread: 60,
-      origin: { y: 0.6 }
-    });
+    setLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          name: formState.name,
+          email: formState.email,
+          phone: formState.phone,
+          brand_or_organization: formState.brandName || 'N/A',
+          inquiry_type: topic,
+          subject: `New Bazarna Inquiry [${topic}] - ${formState.name} (${formState.brandName || 'Personal'})`,
+          message: formState.message,
+          from_name: 'Bazarna Website Inquiries'
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitted(true);
+        confetti({
+          particleCount: 70,
+          spread: 60,
+          origin: { y: 0.6 }
+        });
+      } else {
+        setErrorMessage(result.message || 'Something went wrong. Please try again.');
+      }
+    } catch (err) {
+      setErrorMessage('Network error. Please check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClose = () => {
     setSubmitted(false);
+    setErrorMessage(null);
     onClose();
   };
 
@@ -184,12 +223,29 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, def
                 />
               </div>
 
+              {errorMessage && (
+                <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-full bg-[#121316] text-[#FBF9F5] text-xs font-bold uppercase tracking-wider hover:bg-[#C85A32] transition-colors flex items-center justify-center gap-2 cursor-pointer mt-2"
+                disabled={loading}
+                className="w-full py-3.5 rounded-full bg-[#121316] text-[#FBF9F5] text-xs font-bold uppercase tracking-wider hover:bg-[#C85A32] disabled:opacity-70 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 cursor-pointer mt-2"
               >
-                <span>Submit Inquiry</span>
-                <Send className="w-3.5 h-3.5" />
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Sending Inquiry...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Submit Inquiry</span>
+                    <Send className="w-3.5 h-3.5" />
+                  </>
+                )}
               </button>
             </form>
           </div>

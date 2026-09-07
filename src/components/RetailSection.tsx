@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { RETAIL_SECTION } from '../data/bazarnaData';
-import { MapPin, ArrowUpRight, CheckCircle2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { MapPin, ArrowUpRight, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface RetailSectionProps {
   onOpenContact: (detail?: string) => void;
@@ -9,6 +9,54 @@ interface RetailSectionProps {
 
 export const RetailSection: React.FC<RetailSectionProps> = ({ onOpenContact }) => {
   const { store, motion: motionLoc, performance } = RETAIL_SECTION;
+  
+  // The Store Swiper State
+  const [activeStoreImg, setActiveStoreImg] = useState(0);
+  const [isStorePaused, setIsStorePaused] = useState(false);
+  const storeGalleryLength = store.gallery?.length || 1;
+
+  // The Motion Swiper State
+  const [activeMotionImg, setActiveMotionImg] = useState(0);
+  const [isMotionPaused, setIsMotionPaused] = useState(false);
+  const motionGalleryLength = motionLoc.gallery?.length || 1;
+
+  // Auto-play swiper effect for The Store
+  useEffect(() => {
+    if (isStorePaused || storeGalleryLength <= 1) return;
+    const interval = setInterval(() => {
+      setActiveStoreImg((prev) => (prev + 1) % storeGalleryLength);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isStorePaused, storeGalleryLength]);
+
+  // Auto-play swiper effect for The Motion
+  useEffect(() => {
+    if (isMotionPaused || motionGalleryLength <= 1) return;
+    const interval = setInterval(() => {
+      setActiveMotionImg((prev) => (prev + 1) % motionGalleryLength);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [isMotionPaused, motionGalleryLength]);
+
+  const handleStorePrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveStoreImg((prev) => (prev - 1 + storeGalleryLength) % storeGalleryLength);
+  };
+
+  const handleStoreNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveStoreImg((prev) => (prev + 1) % storeGalleryLength);
+  };
+
+  const handleMotionPrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveMotionImg((prev) => (prev - 1 + motionGalleryLength) % motionGalleryLength);
+  };
+
+  const handleMotionNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveMotionImg((prev) => (prev + 1) % motionGalleryLength);
+  };
 
   return (
     <section id="retail" className="py-24 sm:py-32 px-6 sm:px-8 lg:px-12 bg-[#121316] text-[#FBF9F5] border-b border-white/10 relative overflow-hidden">
@@ -37,21 +85,72 @@ export const RetailSection: React.FC<RetailSectionProps> = ({ onOpenContact }) =
         {/* The Store & The Motion Split Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
           
-          {/* THE STORE */}
+          {/* THE STORE — AUTO SWIPER */}
           <div className="rounded-3xl bg-white/5 border border-white/10 hover:border-[#C85A32]/60 transition-all duration-300 overflow-hidden flex flex-col justify-between group shadow-xl">
-            <div className="aspect-[16/10] relative overflow-hidden bg-stone-900">
-              <img
-                src="/extracted_images/p27_img1.jpeg"
-                alt="The Store @ Marina Marassi by Emaar"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                onError={(e) => {
-                  e.currentTarget.src = store.image;
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#121316] via-transparent to-transparent opacity-80" />
-              <div className="absolute top-4 left-4 px-3.5 py-1 rounded-full bg-[#C85A32] text-white text-[10px] font-bold tracking-widest uppercase">
+            <div 
+              className="aspect-[16/10] relative overflow-hidden bg-stone-900 select-none"
+              onMouseEnter={() => setIsStorePaused(true)}
+              onMouseLeave={() => setIsStorePaused(false)}
+            >
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={activeStoreImg}
+                  src={store.gallery ? store.gallery[activeStoreImg].src : store.image}
+                  alt="The Store @ Marina Marassi by Emaar"
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/images/the_store_1.jpg";
+                  }}
+                />
+              </AnimatePresence>
+
+              <div className="absolute inset-0 bg-gradient-to-t from-[#121316]/90 via-transparent to-black/30 pointer-events-none" />
+              
+              <div className="absolute top-4 left-4 px-3.5 py-1 rounded-full bg-[#C85A32] text-white text-[10px] font-bold tracking-widest uppercase z-10 shadow-lg">
                 LUXURY RETAIL DESTINATION
               </div>
+
+              {/* Prev / Next Controls on Hover */}
+              {storeGalleryLength > 1 && (
+                <>
+                  <button
+                    onClick={handleStorePrev}
+                    aria-label="Previous Slide"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-[#C85A32] text-white flex items-center justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer z-20 border border-white/10 hover:border-transparent hover:scale-110"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={handleStoreNext}
+                    aria-label="Next Slide"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-[#C85A32] text-white flex items-center justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer z-20 border border-white/10 hover:border-transparent hover:scale-110"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </>
+              )}
+
+              {/* Minimalist Swiper Dots */}
+              {storeGalleryLength > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                  {store.gallery?.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveStoreImg(idx)}
+                      aria-label={`Go to slide ${idx + 1}`}
+                      className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                        activeStoreImg === idx
+                          ? 'w-6 bg-[#C85A32]'
+                          : 'w-1.5 bg-white/40 hover:bg-white/70'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="p-8 sm:p-10 flex-1 flex flex-col justify-between">
@@ -89,21 +188,72 @@ export const RetailSection: React.FC<RetailSectionProps> = ({ onOpenContact }) =
             </div>
           </div>
 
-          {/* THE MOTION */}
+          {/* THE MOTION — AUTO SWIPER */}
           <div className="rounded-3xl bg-white/5 border border-white/10 hover:border-[#1CA778]/60 transition-all duration-300 overflow-hidden flex flex-col justify-between group shadow-xl">
-            <div className="aspect-[16/10] relative overflow-hidden bg-stone-900">
-              <img
-                src="/extracted_images/p36_img1.jpeg"
-                alt="The Motion @ BeFit Marassi"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                onError={(e) => {
-                  e.currentTarget.src = motionLoc.image;
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#121316] via-transparent to-transparent opacity-80" />
-              <div className="absolute top-4 left-4 px-3.5 py-1 rounded-full bg-[#1CA778] text-white text-[10px] font-bold tracking-widest uppercase">
+            <div 
+              className="aspect-[16/10] relative overflow-hidden bg-stone-900 select-none"
+              onMouseEnter={() => setIsMotionPaused(true)}
+              onMouseLeave={() => setIsMotionPaused(false)}
+            >
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={activeMotionImg}
+                  src={motionLoc.gallery ? motionLoc.gallery[activeMotionImg].src : motionLoc.image}
+                  alt="The Motion @ BeFit Marassi"
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/images/the_motion_inside3.jpg";
+                  }}
+                />
+              </AnimatePresence>
+
+              <div className="absolute inset-0 bg-gradient-to-t from-[#121316]/90 via-transparent to-black/30 pointer-events-none" />
+              
+              <div className="absolute top-4 left-4 px-3.5 py-1 rounded-full bg-[#1CA778] text-white text-[10px] font-bold tracking-widest uppercase z-10 shadow-lg">
                 ACTIVE & PERFORMANCE
               </div>
+
+              {/* Prev / Next Controls on Hover */}
+              {motionGalleryLength > 1 && (
+                <>
+                  <button
+                    onClick={handleMotionPrev}
+                    aria-label="Previous Slide"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-[#1CA778] text-white flex items-center justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer z-20 border border-white/10 hover:border-transparent hover:scale-110"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={handleMotionNext}
+                    aria-label="Next Slide"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-[#1CA778] text-white flex items-center justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer z-20 border border-white/10 hover:border-transparent hover:scale-110"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </>
+              )}
+
+              {/* Minimalist Swiper Dots */}
+              {motionGalleryLength > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                  {motionLoc.gallery?.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveMotionImg(idx)}
+                      aria-label={`Go to slide ${idx + 1}`}
+                      className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                        activeMotionImg === idx
+                          ? 'w-6 bg-[#1CA778]'
+                          : 'w-1.5 bg-white/40 hover:bg-white/70'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="p-8 sm:p-10 flex-1 flex flex-col justify-between">

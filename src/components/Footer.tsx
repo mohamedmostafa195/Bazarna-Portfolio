@@ -9,6 +9,7 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ onOpenContact }) => {
   const [email, setEmail] = React.useState('');
   const [subscribed, setSubscribed] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -21,11 +22,31 @@ export const Footer: React.FC<FooterProps> = ({ onOpenContact }) => {
     }
   };
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
+    if (!email) return;
+    setIsSubmitting(true);
+    try {
+      await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: "d428552a-7049-4cca-bce5-0788637aef58",
+          email: email,
+          subject: "New Newsletter Subscriber (Bazarna Website)",
+          from_name: "Bazarna Newsletter"
+        })
+      });
       setSubscribed(true);
       setEmail('');
+    } catch {
+      setSubscribed(true);
+      setEmail('');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

@@ -364,7 +364,12 @@ export const RETAIL_SECTION = {
       "Curated luxury apparel, fine jewelry, resort-wear, and accessories",
       "Turnkey visual merchandising and full retail management"
     ],
-    image: "/images/real_marassi.jpg"
+    image: "/images/the_store_4.jpg",
+    gallery: [
+      { src: "/images/the_store_4.jpg", title: "High-Footfall Retail Hub" },
+      { src: "/images/the_store_1.jpg", title: "Marina Marassi Storefront" },
+      { src: "/images/the_store_3.jpg", title: "Accessories & Curation" }
+    ]
   },
   motion: {
     title: "THE MOTION",
@@ -377,7 +382,13 @@ export const RETAIL_SECTION = {
       "Curated activewear, performance gear, and wellness labels",
       "Direct exposure to fitness enthusiasts and lifestyle tastemakers"
     ],
-    image: "/images/marassi_store.jpg"
+    image: "/images/the_motion_inside3.jpg",
+    gallery: [
+      { src: "/images/the_motion_inside3.jpg", title: "Showcase & Merchandising" },
+      { src: "/images/the_motion_store.jpg", title: "Store Front & Mascot" },
+      { src: "/images/the_motion_inside1.jpg", title: "Interior Apparel Display" },
+      { src: "/images/the_motion_inside2.jpg", title: "Racks & Retail Setup" }
+    ]
   },
   performance: {
     brands: "38+",
