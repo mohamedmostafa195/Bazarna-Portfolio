@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
-import { FOOTER_DATA } from '../data/bazarnaData';
 
 interface NavbarProps {
   onOpenContact: (category?: string) => void;
@@ -9,14 +8,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 30);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const [activeSection, setActiveSection] = useState<string>('');
 
   const navItems = [
     { label: 'About', href: '#about' },
@@ -29,8 +21,50 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
     { label: 'Founder', href: '#founder' },
   ];
 
+  useEffect(() => {
+    const sectionIds = ['about', 'story', 'popups', 'retail', 'services', 'partnerships', 'community', 'founder'];
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+
+      // Check if near bottom of page
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100) {
+        setActiveSection('founder');
+        return;
+      }
+
+      // Check which section is in view
+      const scrollPosition = window.scrollY + 180;
+
+      let current = '';
+      for (const id of sectionIds) {
+        const element = document.getElementById(id);
+        if (element) {
+          const top = element.offsetTop;
+          const height = element.offsetHeight;
+          if (scrollPosition >= top && scrollPosition < top + height) {
+            current = id;
+            break;
+          }
+        }
+      }
+
+      if (current) {
+        setActiveSection(current);
+      } else if (window.scrollY < 200) {
+        setActiveSection('');
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const handleNavClick = (href: string) => {
     setMobileMenuOpen(false);
+    const targetId = href.replace('#', '');
+    setActiveSection(targetId);
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -43,21 +77,26 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
             ? 'bg-[#FBF9F5]/95 backdrop-blur-md py-3 shadow-md border-b border-[#121316]/10'
-            : 'bg-transparent py-5 lg:py-6'
+            : 'bg-[#FBF9F5]/80 backdrop-blur-xs py-4 lg:py-5 border-b border-[#121316]/5'
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex items-center justify-between">
           {/* Real Bazarna Logo */}
           <a
             href="#"
-            className="flex items-center gap-3 group focus:outline-none"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              setActiveSection('');
+            }}
+            className="flex items-center gap-3 group focus:outline-none cursor-pointer"
             aria-label="Bazarna Home"
           >
             <div className="h-9 sm:h-11 flex items-center gap-3">
               <img
                 src="/images/bazarna_logo_icon.png"
                 alt="BAZARNA Logo"
-                className="h-full w-auto object-contain rounded-md shadow-sm transition-transform duration-300 group-hover:scale-105"
+                className="h-full w-auto object-contain rounded-md shadow-xs transition-transform duration-300 group-hover:scale-105"
               />
               <div className="flex flex-col">
                 <span className="font-heading font-black text-xl sm:text-2xl tracking-tight text-[#121316] leading-none">
@@ -70,28 +109,44 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
             </div>
           </a>
 
-          {/* Desktop Navigation Links */}
+          {/* Desktop Navigation Links with Clean Underline Indicator */}
           <nav className="hidden md:flex items-center gap-6 lg:gap-8" aria-label="Main Navigation">
-            {navItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavClick(item.href);
-                }}
-                className="text-xs font-bold uppercase tracking-wider text-[#343741] hover:text-[#C85A32] transition-colors duration-200 relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-[#C85A32] hover:after:w-full after:transition-all after:duration-200"
-              >
-                {item.label}
-              </a>
-            ))}
+            {navItems.map((item) => {
+              const targetId = item.href.replace('#', '');
+              const isActive = activeSection === targetId;
+
+              return (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick(item.href);
+                  }}
+                  className={`text-xs font-bold uppercase tracking-wider transition-all duration-200 relative py-2 cursor-pointer ${
+                    isActive
+                      ? 'text-[#C85A32]'
+                      : 'text-[#343741] hover:text-[#C85A32]'
+                  }`}
+                >
+                  <span>{item.label}</span>
+
+                  {/* Active Underline matching user reference */}
+                  {isActive ? (
+                    <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#C85A32] rounded-full shadow-xs" />
+                  ) : (
+                    <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-[#C85A32] transition-all duration-200 group-hover:w-full" />
+                  )}
+                </a>
+              );
+            })}
           </nav>
 
           {/* Action CTA & Mobile Toggle */}
           <div className="flex items-center gap-4">
             <button
               onClick={() => onOpenContact('General Inquiry')}
-              className="hidden sm:inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#121316] text-[#FBF9F5] text-xs font-bold uppercase tracking-wider hover:bg-[#C85A32] transition-all duration-300 shadow-sm hover:shadow active:scale-95 cursor-pointer"
+              className="hidden sm:inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#121316] text-[#FBF9F5] text-xs font-bold uppercase tracking-wider hover:bg-[#C85A32] transition-all duration-300 shadow-xs hover:shadow active:scale-95 cursor-pointer"
             >
               <span>Get in Touch</span>
               <ArrowUpRight className="w-4 h-4" />
@@ -147,20 +202,30 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
               </button>
             </div>
 
-            <nav className="mt-8 flex flex-col gap-4">
-              {navItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavClick(item.href);
-                  }}
-                  className="text-base font-bold uppercase tracking-wide text-[#121316] hover:text-[#C85A32] py-2 transition-colors"
-                >
-                  {item.label}
-                </a>
-              ))}
+            <nav className="mt-8 flex flex-col gap-2">
+              {navItems.map((item) => {
+                const targetId = item.href.replace('#', '');
+                const isActive = activeSection === targetId;
+
+                return (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavClick(item.href);
+                    }}
+                    className={`text-sm font-bold uppercase tracking-wide py-2.5 px-4 rounded-xl transition-all flex items-center justify-between ${
+                      isActive
+                        ? 'text-[#C85A32] bg-[#C85A32]/10 border-l-4 border-[#C85A32] font-black'
+                        : 'text-[#121316] hover:text-[#C85A32] hover:bg-black/[0.03]'
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    {isActive && <span className="w-2 h-2 rounded-full bg-[#C85A32]" />}
+                  </a>
+                );
+              })}
             </nav>
           </div>
 
@@ -170,7 +235,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
                 setMobileMenuOpen(false);
                 onOpenContact();
               }}
-              className="w-full py-3.5 rounded-full bg-[#121316] text-[#FBF9F5] font-bold text-xs uppercase tracking-wider hover:bg-[#C85A32] flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-full bg-[#121316] text-[#FBF9F5] font-bold text-xs uppercase tracking-wider hover:bg-[#C85A32] flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>Get in Touch</span>
               <ArrowUpRight className="w-4 h-4" />
@@ -184,3 +249,4 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
     </>
   );
 };
+
