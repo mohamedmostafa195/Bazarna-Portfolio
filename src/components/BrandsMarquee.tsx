@@ -3,34 +3,71 @@ import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 
 export const BrandsMarquee: React.FC = () => {
-  const brandsRow1 = [
-    { name: "OKHTEIN", cat: "Luxury Leather", highlight: "From Cairo to International Runways" },
-    { name: "SABRY MAROUF", cat: "Artisanal Accessories", highlight: "Fine Jewelry & Craftsmanship" },
-    { name: "ZAAM DESIGNS", cat: "Contemporary Bags", highlight: "Egyptian Leather Heritage" },
-    { name: "INCH", cat: "Streetwear", highlight: "Youth Culture Pioneer" },
-    { name: "UNAI", cat: "Resortwear", highlight: "Summer Collection Flagship" },
-    { name: "KAI COLLECTIONS", cat: "Swimwear & Lifestyle", highlight: "Mediterranean Aesthetics" },
-    { name: "NADA ZEIDAN", cat: "Fine Jewelry", highlight: "Bespoke Egyptian Gems" },
-    { name: "PALM HILLS MERCH", cat: "Lifestyle Apparel", highlight: "Collaborative Lines" },
+  const brands = [
+    {
+      name: "Jude Benhalim",
+      cat: "Fine Jewelry",
+      logo: "/brand_logos/jude_benhalim.png"
+    },
+    {
+      name: "Sara Elemary",
+      cat: "Ready-to-Wear",
+      logo: "/brand_logos/sara_elemary.png"
+    },
+    {
+      name: "Nile Eyewear",
+      cat: "Designer Eyewear",
+      logo: "/brand_logos/nile_eyewear.png"
+    },
+    {
+      name: "UP•FUSE",
+      cat: "Sustainable Fashion",
+      logo: "/brand_logos/upfuse.png"
+    },
+    {
+      name: "NOTFOUND",
+      cat: "Streetwear & Apparel",
+      logo: "/brand_logos/notfound.png"
+    },
+    {
+      name: "Nesaa",
+      cat: "Women's Fashion",
+      logo: "/brand_logos/nesaa.png"
+    },
+    {
+      name: "JUVÉNILE",
+      cat: "Contemporary Wear",
+      logo: "/brand_logos/juvenile.png"
+    },
+    {
+      name: "Palma Cairo",
+      cat: "Leather Goods & Bags",
+      logo: "/brand_logos/palma.png"
+    },
+    {
+      name: "Fazzali",
+      cat: "Lifestyle Apparel",
+      logo: "/brand_logos/fazzali.png"
+    },
+    {
+      name: "MYNE",
+      cat: "Curated Fashion",
+      logo: "/brand_logos/myne.png"
+    }
   ];
 
-  const brandsRow2 = [
-    { name: "THE GYM STORE", cat: "Athleisure", highlight: "High-Performance Activewear" },
-    { name: "NOT YOUR STANDARD", cat: "Footwear", highlight: "Gen-Z Trendsetter" },
-    { name: "URBAN NOMAD", cat: "Apparel", highlight: "Conscious Tailoring" },
-    { name: "MAISON 69 CURATED", cat: "Concept Fashion", highlight: "Selected Showcase" },
-    { name: "B.ORIGINALS", cat: "Casual Chic", highlight: "High-Velocity Turnover" },
-    { name: "SELA RESORT", cat: "Linen & Resort", highlight: "North Coast Essential" },
-    { name: "INDIGO STUDIO", cat: "Ceramics & Home", highlight: "Artisanal Pottery" },
-    { name: "VELA ATHLETICS", cat: "Performance Wear", highlight: "BeFit Partner Brand" },
-  ];
+  // Repeat for continuous seamless loop
+  const marqueeItems = [...brands, ...brands, ...brands];
 
   return (
     <section className="py-20 bg-[#121316] text-[#FBF9F5] border-b border-white/10 overflow-hidden relative">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 mb-12 text-center">
+      {/* Subtle Glow Behind Marquee */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[250px] bg-[#C85A32]/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 mb-12 text-center relative z-10">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/15 text-xs text-[#FFC107] mb-4">
           <Sparkles className="w-3.5 h-3.5" />
-          <span className="tracker-tag">20,000+ BRANDS HOSTED</span>
+          <span className="tracker-tag">BRANDS THAT GREW WITH US</span>
         </div>
         <h2 className="font-anton text-4xl sm:text-5xl lg:text-6xl text-white uppercase tracking-tight">
           THE BRANDS. THE STORIES. THE GROWTH.
@@ -40,49 +77,28 @@ export const BrandsMarquee: React.FC = () => {
         </p>
       </div>
 
-      {/* Marquee Row 1 */}
-      <div className="relative flex overflow-x-hidden mb-6">
+      {/* Single Line Marquee Row */}
+      <div className="relative flex overflow-x-hidden py-4">
+        {/* Left & Right gradient fade masks for smooth aesthetics */}
+        <div className="absolute left-0 top-0 bottom-0 w-24 sm:w-40 bg-gradient-to-r from-[#121316] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-24 sm:w-40 bg-gradient-to-l from-[#121316] to-transparent z-10 pointer-events-none" />
+
         <motion.div
-          className="flex gap-6 shrink-0"
-          animate={{ x: [0, -1200] }}
+          className="flex gap-6 shrink-0 items-center"
+          animate={{ x: ["0%", "-33.333%"] }}
           transition={{ repeat: Infinity, duration: 24, ease: "linear" }}
         >
-          {[...brandsRow1, ...brandsRow1].map((b, i) => (
+          {marqueeItems.map((brand, i) => (
             <div
-              key={i}
-              className="px-8 py-5 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-[#C85A32] hover:bg-white/[0.08] transition-all duration-300 shrink-0 cursor-default group"
+              key={`${brand.name}-${i}`}
+              className="px-6 py-4 rounded-2xl bg-white flex flex-col items-center justify-center h-24 sm:h-28 w-52 sm:w-60 shadow-lg border border-white/20 hover:border-[#C85A32] hover:scale-105 hover:shadow-2xl transition-all duration-300 shrink-0 cursor-pointer group"
             >
-              <div className="font-anton text-2xl text-white group-hover:text-[#FFC107] transition-colors tracking-wide">
-                {b.name}
-              </div>
-              <div className="flex items-center gap-2 text-[11px] font-mono text-gray-400 mt-1">
-                <span className="text-[#C85A32]">•</span>
-                <span>{b.cat}</span>
-              </div>
-            </div>
-          ))}
-        </motion.div>
-      </div>
-
-      {/* Marquee Row 2 (Reverse Direction) */}
-      <div className="relative flex overflow-x-hidden">
-        <motion.div
-          className="flex gap-6 shrink-0"
-          animate={{ x: [-1200, 0] }}
-          transition={{ repeat: Infinity, duration: 28, ease: "linear" }}
-        >
-          {[...brandsRow2, ...brandsRow2].map((b, i) => (
-            <div
-              key={i}
-              className="px-8 py-5 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-[#1CA778] hover:bg-white/[0.08] transition-all duration-300 shrink-0 cursor-default group"
-            >
-              <div className="font-anton text-2xl text-white group-hover:text-[#1CA778] transition-colors tracking-wide">
-                {b.name}
-              </div>
-              <div className="flex items-center gap-2 text-[11px] font-mono text-gray-400 mt-1">
-                <span className="text-[#1CA778]">•</span>
-                <span>{b.cat}</span>
-              </div>
+              <img
+                src={brand.logo}
+                alt={brand.name}
+                className="max-h-12 sm:max-h-14 max-w-[150px] sm:max-w-[170px] w-auto h-auto object-contain transition-transform duration-300 group-hover:scale-108"
+                loading="lazy"
+              />
             </div>
           ))}
         </motion.div>
@@ -90,3 +106,4 @@ export const BrandsMarquee: React.FC = () => {
     </section>
   );
 };
+
