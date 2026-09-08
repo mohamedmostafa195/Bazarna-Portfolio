@@ -14,6 +14,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
     { label: 'About', href: '#about' },
     { label: 'Story', href: '#story' },
     { label: 'Pop-Ups', href: '#popups' },
+    { label: 'Highlights', href: '#highlights' },
     { label: 'Retail', href: '#retail' },
     { label: 'Services', href: '#services' },
     { label: 'Partnerships', href: '#partnerships' },
@@ -22,7 +23,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
   ];
 
   useEffect(() => {
-    const sectionIds = ['about', 'story', 'popups', 'retail', 'services', 'partnerships', 'community', 'founder'];
+    const sectionIds = ['about', 'story', 'popups', 'highlights', 'retail', 'services', 'partnerships', 'community', 'founder'];
 
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);

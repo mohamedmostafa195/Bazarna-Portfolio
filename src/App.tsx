@@ -8,6 +8,7 @@ import { DifferenceSection } from './components/DifferenceSection';
 import { StatsSection } from './components/StatsSection';
 import { EcosystemSection } from './components/EcosystemSection';
 import { PopUpConcepts } from './components/PopUpConcepts';
+import { EventHighlights } from './components/EventHighlights';
 import { RetailSection } from './components/RetailSection';
 import { ServicesSection } from './components/ServicesSection';
 import { PartnershipsSection } from './components/PartnershipsSection';
@@ -64,6 +65,9 @@ export default function App() {
 
         {/* 09 — Pop-Up Concepts (Playgrounds) */}
         <PopUpConcepts onOpenContact={handleOpenContact} />
+
+        {/* 09.5 — Event Highlights & Live Video Moments */}
+        <EventHighlights />
 
         {/* 10 — Retail Concepts (The Store & The Motion) */}
         <RetailSection onOpenContact={handleOpenContact} />
